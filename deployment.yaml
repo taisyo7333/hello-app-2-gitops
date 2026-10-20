@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app-2
+  namespace: hello-app-2
+  labels:
+    app: hello-app-2
+    backstage.io/kubernetes-id: hello-app-2
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  replicas: 2
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels:
+      app: hello-app-2
+  template:
+    metadata:
+      labels:
+        app: hello-app-2
+        backstage.io/kubernetes-id: hello-app-2
+    spec:
+      serviceAccountName: hello-app-2
+      containers:
+        - name: app
+          image: image-registry.openshift-image-registry.svc:5000/hello-app-2/hello-app-2:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: APP_NAME
+              value: hello-app-2
+            - name: NAMESPACE
+              value: hello-app-2
+            - name: S3_BUCKET
+              value: hello-app-2-1020
+            - name: S3_OBJECT_KEY
+              value: message.txt
+            - name: AWS_REGION
+              value: ap-northeast-1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10

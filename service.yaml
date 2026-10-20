@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-app-2
+  namespace: hello-app-2
+  labels:
+    app: hello-app-2
+    backstage.io/kubernetes-id: hello-app-2
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  selector:
+    app: hello-app-2
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
